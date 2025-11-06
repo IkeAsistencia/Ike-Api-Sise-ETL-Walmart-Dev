@@ -1,4 +1,6 @@
 import json
+import base64
+
 
 def lambda_handler(event, context):
     # Obtenemos el evento
@@ -20,10 +22,13 @@ def lambda_handler(event, context):
             {"id": 2, "nombre": "Laura", "rol": "Usuario"},
         ]
 
-        # Generamos un CSV en memoria
+        # Generamos titulos y filas
         muestraData = "id,nombre,rol\n"
         for d in datos:
             muestraData += f"{d['id']},{d['nombre']},{d['rol']}\n"
+
+        # Codificamos el CSV en Base64 para que AWS no lo rompa
+        csv_b64 = base64.b64encode(muestraData.encode("utf-8")).decode("utf-8")
 
         return {
             "statusCode": 200,
@@ -31,7 +36,7 @@ def lambda_handler(event, context):
                 "Content-Type": "text/csv",
                 "Content-Disposition": "attachment; filename=consulta.csv"
             },
-            "body": muestraData
+            "body": csv_b64
         }
 
     # Ruta no encontrada
