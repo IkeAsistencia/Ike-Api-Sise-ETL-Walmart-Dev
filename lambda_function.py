@@ -4,8 +4,17 @@ import base64
 
 def lambda_handler(event, context):
     # Obtenemos el evento
-    path = event.get("rawPath", "/")
+    path = (
+        event.get("rawPath")
+        or event.get("requestContext", {}).get("http", {}).get("path")
+        or "/"
+    )
     method = event.get("requestContext", {}).get("http", {}).get("method", "GET")
+
+    #Preparación para token o autenticación si es necesario
+    headers = event.get("headers", {}) or {}
+    token = headers.get("Authorization")
+
 
     # ruta raiz con get
     if path == "/" and method == "GET":
