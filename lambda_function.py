@@ -21,7 +21,7 @@ def lambda_handler(event, context):
         return {
             "statusCode": 200,
             "headers": {"Content-Type": "application/json"},
-            "body": json.dumps({"mensaje": "API Lambda activa"})
+            "body": json.dumps({"mensajito": "API Lambda actia"})
         }
 
     # ruta consulta_csv con get
