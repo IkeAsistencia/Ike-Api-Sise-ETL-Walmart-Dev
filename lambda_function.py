@@ -49,7 +49,7 @@ def lambda_handler(event, context):
                 "Content-Type": "text/csv",
                 "Content-Disposition": "attachment; filename=consulta.csv"
             },
-            "body": csv_b64
+            "body": muestraData
         }
 
     # Ruta no encontrada
