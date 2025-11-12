@@ -17,19 +17,19 @@ def lambda_handler(event, context):
 
 
     # ruta raiz con get
-    if path == "/" and method == "GET":
+    if path == "/cc" and method == "GET":
         return {
             "statusCode": 200,
             "headers": {"Content-Type": "application/json"},
             "body": json.dumps({
-                "mensajito": "API Lambda actia",
+                "mensajito": "API Lambda activa",
                 "ruta": f"{path}",
                 "metodo": f"{method}"
             })
         }
 
     # ruta consulta_csv con get
-    elif path == "/consulta_csv" and method == "GET":
+    elif path == "/" and method == "GET":
         datos = [
             {"id": 1, "nombre": "Ricardo", "rol": "Admin"},
             {"id": 2, "nombre": "Laura", "rol": "Usuario"},
