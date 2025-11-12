@@ -48,7 +48,7 @@ def lambda_handler(event, context):
             "headers": {
                 "Content-Type": "application/json",
                 #"Content-Type": "text/csv",
-                "Content-Disposition": "attachment; filename=consulta.csv"
+                #"Content-Disposition": "attachment; filename=consulta.csv"
             },
             "body": muestraData
         }
