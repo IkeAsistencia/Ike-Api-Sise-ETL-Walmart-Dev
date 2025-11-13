@@ -1,7 +1,6 @@
 import json
 import base64
 
-
 def lambda_handler(event, context):
     # Obtenemos el evento
     path = (
@@ -50,7 +49,10 @@ def lambda_handler(event, context):
                 #"Content-Type": "text/csv",
                 #"Content-Disposition": "attachment; filename=consulta.csv"
             },
-            "body": muestraData
+            #"body": muestraData
+            "body": json.dumps({
+                muestraData
+            })
         }
 
     # Ruta no encontrada
