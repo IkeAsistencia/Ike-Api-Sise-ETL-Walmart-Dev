@@ -16,7 +16,7 @@ def lambda_handler(event, context):
 
 
     # ruta raiz con get
-    if path == "/cc" and method == "GET":
+    if path == "/" and method == "GET":
         return {
             "statusCode": 200,
             "headers": {"Content-Type": "application/json"},
@@ -28,12 +28,12 @@ def lambda_handler(event, context):
         }
 
     # ruta consulta_csv con get
-    elif path == "/" and method == "GET":
+    elif path == "/consulta" and method == "GET":
         datos = [
             {"id": 1, "nombre": "Ricardo", "rol": "Admin"},
             {"id": 2, "nombre": "Laura", "rol": "Usuario"},
         ]
-
+        print ("Datos a exportar:", datos)
         # Generamos titulos y filas
         muestraData = "id,nombre,rol\n"
         for d in datos:
