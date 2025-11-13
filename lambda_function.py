@@ -51,7 +51,7 @@ def lambda_handler(event, context):
             },
             #"body": muestraData
             "body": json.dumps({
-               "data": muestraData
+               "data": datos
 
             })
         }
