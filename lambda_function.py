@@ -1,5 +1,6 @@
 import json
 import base64
+from ConexionCobros import conectar
 
 def lambda_handler(event, context):
     # Obtenemos el evento
@@ -29,10 +30,21 @@ def lambda_handler(event, context):
 
     # ruta consulta_csv con get
     elif path == "/" and method == "GET":
+        # conexion a la base de datos y obtencion de datos
+        conexion = conectar()
+        cursor = conexion.cursor()
+        cursor.execute("SELECT * FROM DBO.CAFILIADOWBP")
+        #cursor.execute("EXEC [sp_tmkgcA_DescargaCobroPopularCH] ?,?",
+        #                (dsproyecto,lote,))
+        resultados = cursor.fetchall()
+        cursor.close()
+        conexion.close()
+
         datos = [
             {"id": 1, "nombre": "Ricardo", "rol": "Admin"},
             {"id": 2, "nombre": "Laura", "rol": "Usuario"},
         ]
+        print ("Datos de BD:", resultados)
         print ("Datos a exportar:", datos)
         # Generamos titulos y filas
         muestraData = "id,nombre,rol\n"
@@ -51,7 +63,7 @@ def lambda_handler(event, context):
             },
             #"body": muestraData
             "body": json.dumps({
-               "data": datos
+               "data": resultados
 
             })
         }
