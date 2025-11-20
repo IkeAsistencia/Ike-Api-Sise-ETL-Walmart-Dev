@@ -1,6 +1,8 @@
 import json
 import base64
-from ConexionBD import conectar
+import datetime
+import decimal
+from ConexionCobros import conectar
 
 def lambda_handler(event, context):
     # Obtenemos el evento
@@ -37,9 +39,47 @@ def lambda_handler(event, context):
         #cursor.execute("EXEC [sp_tmkgcA_DescargaCobroPopularCH] ?,?",
         #                (dsproyecto,lote,))
         resultados = cursor.fetchall()
+        # obtener nombres de columnas (si existen) antes de cerrar cursor
+        columnas = [c[0] for c in cursor.description] if cursor.description else []
         cursor.close()
         conexion.close()
 
+        # helper para serializar tipos no JSON-serializables
+        def _serialize_value(v):
+            if v is None:
+                return None
+            if isinstance(v, (str, int, float, bool)):
+                return v
+            if isinstance(v, (datetime.date, datetime.datetime)):
+                return v.isoformat()
+            if isinstance(v, decimal.Decimal):
+                try:
+                    return float(v)
+                except Exception:
+                    return str(v)
+            if isinstance(v, (bytes, bytearray)):
+                try:
+                    return v.decode("utf-8")
+                except Exception:
+                    return str(v)
+            return str(v)
+
+        # Convertir resultados (pyodbc.Row o tuplas) a lista de diccionarios JSON-serializables
+        resultados_json = []
+        if resultados:
+            if columnas:
+                for row in resultados:
+                    fila = {col: _serialize_value(val) for col, val in zip(columnas, row)}
+                    resultados_json.append(fila)
+            else:
+                for row in resultados:
+                    resultados_json.append([_serialize_value(v) for v in row])
+        else:
+            resultados_json = []
+
+        print("Datos de BD (convertidos):", resultados_json)
+
+        #
         datos = [
             {"id": 1, "nombre": "Ricardo", "rol": "Admin"},
             {"id": 2, "nombre": "Laura", "rol": "Usuario"},
@@ -53,7 +93,7 @@ def lambda_handler(event, context):
 
         # Codificamos el CSV en Base64 para que AWS no lo rompa
         csv_b64 = base64.b64encode(muestraData.encode("utf-8")).decode("utf-8")
-
+        #
         return {
             "statusCode": 200,
             "headers": {
@@ -61,11 +101,9 @@ def lambda_handler(event, context):
                 #"Content-Type": "text/csv",
                 #"Content-Disposition": "attachment; filename=consulta.csv"
             },
-            #"body": muestraData
             "body": json.dumps({
-               "data": resultados
-
-            })
+               "data": resultados_json
+            }, ensure_ascii=False)
         }
 
     # Ruta no encontrada
