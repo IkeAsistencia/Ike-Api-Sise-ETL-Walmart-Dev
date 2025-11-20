@@ -1,6 +1,6 @@
 import json
 import base64
-from ConexionCobros import conectar
+from ConexionBD import conectar
 
 def lambda_handler(event, context):
     # Obtenemos el evento
