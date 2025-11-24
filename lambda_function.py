@@ -2,7 +2,7 @@ import json
 import base64
 import datetime
 import decimal
-#from ConexionBD import conectar
+from ConexionBD import conectar
 
 # helper para serializar tipos no JSON-serializables
 def _serialize_value(v):
