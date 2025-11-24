@@ -55,7 +55,7 @@ def lambda_handler(event, context):
         #Obtener la variable api-key de el header y validarla
         api_key = headers.get("api-key")
         print("API Key recibida:", api_key)
-        
+        '''''
         if api_key != "6C445EE74E342785F8027BFCC0A1170C":
             return {
                 "statusCode": 403,
@@ -64,7 +64,16 @@ def lambda_handler(event, context):
             }
 
         # conexion a la base de datos y obtencion de datos
-        conexion = conectar()
+        
+        try:
+            conexion = conectar()
+        except Exception as e:
+            print("Error de conexion a la base de datos:", str(e))
+            return {
+                "statusCode": 500,
+                "headers": {"Content-Type": "application/json"},
+                "body": json.dumps({"error": f"Error de conexion a la base de datos"})
+            }
         cursor = conexion.cursor()
         #cursor.execute("SELECT * FROM DBO.CAFILIADOWBP")
         cursor.execute("EXEC [sp_MigraVentas_WM_API] ?",
@@ -87,7 +96,7 @@ def lambda_handler(event, context):
                     resultados_json.append([_serialize_value(v) for v in row])
         else:
             resultados_json = []
-            
+        '''''    
         datos = [
             {"id": 1, "nombre": "Ricardo", "rol": "Admin"},
             {"id": 2, "nombre": "Laura", "rol": "Usuario"},
