@@ -101,7 +101,7 @@ def lambda_handler(event, context):
                 #"Content-Disposition": "attachment; filename=consulta.csv"
             },
             "body": json.dumps({
-               "data": resultados_json
+               "data": datos
             }, ensure_ascii=False)
         }
 
