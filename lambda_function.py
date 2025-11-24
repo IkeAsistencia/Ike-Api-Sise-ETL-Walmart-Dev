@@ -52,6 +52,17 @@ def lambda_handler(event, context):
 
     # ruta consulta_csv con get
     elif path == "/" and method == "GET":
+        #Obtener la variable api-key de el header y validarla
+        api_key = headers.get("api-key")
+        print("API Key recibida:", api_key)
+        
+        if api_key != "6C445EE74E342785F8027BFCC0A1170C":
+            return {
+                "statusCode": 403,
+                "headers": {"Content-Type": "application/json"},
+                "body": json.dumps({"error": "Acceso no autorizado: API Key invalida"})
+            }
+
         # conexion a la base de datos y obtencion de datos
         conexion = conectar()
         cursor = conexion.cursor()
@@ -84,14 +95,16 @@ def lambda_handler(event, context):
         #print ("Datos de BD:", resultados)
         #print ("Datos a exportar:", datos)
         #print("Datos de BD (convertidos):", resultados_json)
-
-        # Generamos titulos y filas
+        #CSV
+        '''''
+        # Generamos titulos y filas        
         muestraData = "id,nombre,rol\n"
         for d in datos:
             muestraData += f"{d['id']},{d['nombre']},{d['rol']}\n"
 
         # Codificamos el CSV en Base64 para que AWS no lo rompa
         csv_b64 = base64.b64encode(muestraData.encode("utf-8")).decode("utf-8")
+        '''
         #
         return {
             "statusCode": 200,
