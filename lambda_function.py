@@ -2,7 +2,27 @@ import json
 import base64
 import datetime
 import decimal
-from ConexionCobros import conectar
+from ConexionBD import conectar
+
+# helper para serializar tipos no JSON-serializables
+def _serialize_value(v):
+    if v is None:
+        return None
+    if isinstance(v, (str, int, float, bool)):
+        return v
+    if isinstance(v, (datetime.date, datetime.datetime)):
+        return v.isoformat()
+    if isinstance(v, decimal.Decimal):
+        try:
+            return float(v)
+        except Exception:
+            return str(v)
+    if isinstance(v, (bytes, bytearray)):
+        try:
+            return v.decode("utf-8")
+        except Exception:
+            return str(v)
+    return str(v)
 
 def lambda_handler(event, context):
     # Obtenemos el evento
@@ -35,36 +55,16 @@ def lambda_handler(event, context):
         # conexion a la base de datos y obtencion de datos
         conexion = conectar()
         cursor = conexion.cursor()
-        cursor.execute("SELECT * FROM DBO.CAFILIADOWBP")
-        #cursor.execute("EXEC [sp_tmkgcA_DescargaCobroPopularCH] ?,?",
-        #                (dsproyecto,lote,))
+        #cursor.execute("SELECT * FROM DBO.CAFILIADOWBP")
+        cursor.execute("EXEC [sp_MigraVentas_WM_API] ?",
+                        (2,))
         resultados = cursor.fetchall()
         # obtener nombres de columnas (si existen) antes de cerrar cursor
         columnas = [c[0] for c in cursor.description] if cursor.description else []
         cursor.close()
         conexion.close()
 
-        # helper para serializar tipos no JSON-serializables
-        def _serialize_value(v):
-            if v is None:
-                return None
-            if isinstance(v, (str, int, float, bool)):
-                return v
-            if isinstance(v, (datetime.date, datetime.datetime)):
-                return v.isoformat()
-            if isinstance(v, decimal.Decimal):
-                try:
-                    return float(v)
-                except Exception:
-                    return str(v)
-            if isinstance(v, (bytes, bytearray)):
-                try:
-                    return v.decode("utf-8")
-                except Exception:
-                    return str(v)
-            return str(v)
-
-        # Convertir resultados (pyodbc.Row o tuplas) a lista de diccionarios JSON-serializables
+        # Convertir resultados filas a lista de diccionarios JSON-serializables
         resultados_json = []
         if resultados:
             if columnas:
@@ -76,16 +76,15 @@ def lambda_handler(event, context):
                     resultados_json.append([_serialize_value(v) for v in row])
         else:
             resultados_json = []
-
-        print("Datos de BD (convertidos):", resultados_json)
-
-        #
+            
         datos = [
             {"id": 1, "nombre": "Ricardo", "rol": "Admin"},
             {"id": 2, "nombre": "Laura", "rol": "Usuario"},
         ]
-        print ("Datos de BD:", resultados)
-        print ("Datos a exportar:", datos)
+        #print ("Datos de BD:", resultados)
+        #print ("Datos a exportar:", datos)
+        #print("Datos de BD (convertidos):", resultados_json)
+
         # Generamos titulos y filas
         muestraData = "id,nombre,rol\n"
         for d in datos:
