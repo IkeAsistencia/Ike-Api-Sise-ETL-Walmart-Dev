@@ -2,9 +2,9 @@ import json
 import base64
 import datetime
 import decimal
-#from ConexionBD import conectar
+from ConexionBD import conectar
 
-# helper para serializar tipos no JSON-serializables
+# helper para serializar tipos de datos
 def serializarDatos(v):
     if v is None:
         return None
@@ -55,7 +55,7 @@ def lambda_handler(event, context):
         #Obtener la variable api-key de el header y validarla
         api_key = headers.get("api-key")
         print("API Key recibida:", api_key)
-        '''''
+        #'''''
         if api_key != "6C445EE74E342785F8027BFCC0A1170C":
             return {
                 "statusCode": 403,
@@ -105,7 +105,6 @@ def lambda_handler(event, context):
         #print ("Datos a exportar:", datos)
         #print("Datos de BD (convertidos):", resultados_json)
         #CSV
-        
         # Generamos titulos y filas        
         muestraData = "id,nombre,rol\n"
         for d in datos:
@@ -113,17 +112,17 @@ def lambda_handler(event, context):
 
         # Codificamos el CSV en Base64 para que AWS no lo rompa
         csv_b64 = base64.b64encode(muestraData.encode("utf-8")).decode("utf-8")
-        
-        #
+        '''
+        #respuesta en JSON
         return {
             "statusCode": 200,
             "headers": {
                 "Content-Type": "application/json",
-                "Content-Type": "text/csv",
-                "Content-Disposition": "attachment; filename=consulta.csv"
+                #"Content-Type": "text/csv",
+                #"Content-Disposition": "attachment; filename=consulta.csv"
             },
             "body": json.dumps({
-               "data": muestraData
+               "data": resultados_json
             }, ensure_ascii=False)
         }
 
