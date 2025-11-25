@@ -1,13 +1,13 @@
 import pyodbc
 import os
-#from dotenv import load_dotenv
+from dotenv import load_dotenv
 
-#load_dotenv()
+load_dotenv()
 
 def conectar():
     conexion=(
-        #'DRIVER={SQL Server};'
-        'DRIVER={FreeTDS};'
+        'DRIVER={SQL Server};'
+        #'DRIVER={FreeTDS};'
         f'SERVER={os.getenv("MX_DB_SERVER")};'
         f'DATABASE={os.getenv("MX_DB_NAME")};'
         f'UID={os.getenv("MX_DB_USER")};'

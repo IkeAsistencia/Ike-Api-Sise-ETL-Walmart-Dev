@@ -2,10 +2,10 @@ import json
 import base64
 import datetime
 import decimal
-from ConexionBD import conectar
+#from ConexionBD import conectar
 
 # helper para serializar tipos no JSON-serializables
-def _serialize_value(v):
+def serializarDatos(v):
     if v is None:
         return None
     if isinstance(v, (str, int, float, bool)):
@@ -55,7 +55,7 @@ def lambda_handler(event, context):
         #Obtener la variable api-key de el header y validarla
         api_key = headers.get("api-key")
         print("API Key recibida:", api_key)
-        
+        '''''
         if api_key != "6C445EE74E342785F8027BFCC0A1170C":
             return {
                 "statusCode": 403,
@@ -64,7 +64,7 @@ def lambda_handler(event, context):
             }
 
         # conexion a la base de datos y obtencion de datos
-        '''''
+        
         try:
             conexion = conectar()
         except Exception as e:
@@ -89,11 +89,11 @@ def lambda_handler(event, context):
         if resultados:
             if columnas:
                 for row in resultados:
-                    fila = {col: _serialize_value(val) for col, val in zip(columnas, row)}
+                    fila = {col: serializarDatos(val) for col, val in zip(columnas, row)}
                     resultados_json.append(fila)
             else:
                 for row in resultados:
-                    resultados_json.append([_serialize_value(v) for v in row])
+                    resultados_json.append([serializarDatos(v) for v in row])
         else:
             resultados_json = []
         '''''    
