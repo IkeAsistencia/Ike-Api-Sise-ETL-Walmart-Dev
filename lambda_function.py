@@ -105,7 +105,7 @@ def lambda_handler(event, context):
         #print ("Datos a exportar:", datos)
         #print("Datos de BD (convertidos):", resultados_json)
         #CSV
-        '''''
+        
         # Generamos titulos y filas        
         muestraData = "id,nombre,rol\n"
         for d in datos:
@@ -113,17 +113,17 @@ def lambda_handler(event, context):
 
         # Codificamos el CSV en Base64 para que AWS no lo rompa
         csv_b64 = base64.b64encode(muestraData.encode("utf-8")).decode("utf-8")
-        '''
+        
         #
         return {
             "statusCode": 200,
             "headers": {
-                #"Content-Type": "application/json",
+                "Content-Type": "application/json",
                 "Content-Type": "text/csv",
                 "Content-Disposition": "attachment; filename=consulta.csv"
             },
             "body": json.dumps({
-               "data": datos
+               "data": muestraData
             }, ensure_ascii=False)
         }
 
