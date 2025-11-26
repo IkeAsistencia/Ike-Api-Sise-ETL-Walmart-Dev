@@ -2,6 +2,7 @@ import json
 import base64
 import datetime
 import decimal
+import logging
 from ConexionBD import conectar
 
 # helper para serializar tipos de datos
@@ -25,6 +26,9 @@ def serializarDatos(v):
     return str(v)
 
 def lambda_handler(event, context):
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+    logger = logging.getLogger()
+
     # Obtenemos el evento
     path = (
         event.get("rawPath")
@@ -53,8 +57,8 @@ def lambda_handler(event, context):
     # ruta consulta_csv con get
     elif path == "/" and method == "GET":
         #Obtener la variable api-key de el header y validarla
-        api_key = headers.get("api-key")
-        print("API Key recibida:", api_key)
+        api_key = headers.get("api-key")         
+        logger.info("API Key recibida: %s", api_key)
         #'''''
         if api_key != "6C445EE74E342785F8027BFCC0A1170C":
             return {
@@ -63,12 +67,12 @@ def lambda_handler(event, context):
                 "body": json.dumps({"error": "Acceso no autorizado: API Key invalida"})
             }
 
-        # conexion a la base de datos y obtencion de datos
+        # conexion a la base de datos y obtencion de datos 
         
         try:
             conexion = conectar()
         except Exception as e:
-            print("Error de conexion a la base de datos:", str(e))
+            logger.error("Error de conexion a la base de datos: %s", str(e))
             return {
                 "statusCode": 500,
                 "headers": {"Content-Type": "application/json"},
@@ -101,9 +105,9 @@ def lambda_handler(event, context):
             {"id": 1, "nombre": "Ricardo", "rol": "Admin"},
             {"id": 2, "nombre": "Laura", "rol": "Usuario"},
         ]
-        #print ("Datos de BD:", resultados)
-        #print ("Datos a exportar:", datos)
-        #print("Datos de BD (convertidos):", resultados_json)
+        #logger.info("Datos de BD: %s", resultados)
+        #logger.info("Datos a exportar: %s", datos)
+        #logger.info("Datos de BD (convertidos): %s", resultados_json)
         #CSV
         # Generamos titulos y filas        
         muestraData = "id,nombre,rol\n"
