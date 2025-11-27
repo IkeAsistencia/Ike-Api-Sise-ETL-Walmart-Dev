@@ -4,7 +4,8 @@ import os
 def conectar():
     conexion=(
         #'DRIVER={SQL Server};'
-        'DRIVER={FreeTDS};'
+        #'DRIVER={FreeTDS};'
+        'DRIVER={ODBC Driver 18 for SQL Server};'
         f'SERVER={os.getenv("MX_DB_SERVER")};'
         f'DATABASE={os.getenv("MX_DB_NAME")};'
         f'UID={os.getenv("MX_DB_USER")};'
