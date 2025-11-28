@@ -33,7 +33,7 @@ def lambda_handler(event, context):
     drivers = pyodbc.drivers()
     
     logger.info("Drivers ODBC disponibles: %s", drivers)
-    
+
     # Obtenemos el evento
     path = (
         event.get("rawPath")
@@ -81,7 +81,7 @@ def lambda_handler(event, context):
             return {
                 "statusCode": 500,
                 "headers": {"Content-Type": "application/json"},
-                "body": json.dumps({"error": f"Error de conexion a la base de datos"})
+                "body": json.dumps({"error": f"Error de conexion a la base de datos {drivers}"})
             }
         cursor = conexion.cursor()
         #cursor.execute("SELECT * FROM DBO.CAFILIADOWBP")
