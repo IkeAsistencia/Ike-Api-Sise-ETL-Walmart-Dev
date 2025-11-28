@@ -26,15 +26,14 @@ def serializarDatos(v):
             return str(v)
     return str(v)
 
-def lambda_handler(event, context):
+def lambda_handler(event, context):    
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+    logger = logging.getLogger()
 
     drivers = pyodbc.drivers()
     
     logger.info("Drivers ODBC disponibles: %s", drivers)
-
-    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-    logger = logging.getLogger()
-
+    
     # Obtenemos el evento
     path = (
         event.get("rawPath")
