@@ -5,6 +5,7 @@ import decimal
 import logging
 from ConexionBD import conectar
 import pyodbc
+import os
 
 # helper para serializar tipos de datos
 def serializarDatos(v):
@@ -26,13 +27,18 @@ def serializarDatos(v):
             return str(v)
     return str(v)
 
-def lambda_handler(event, context):    
+def lambda_handler(event, context):   
+
+    os.environ["ODBCSYSINI"] = "/opt/etc"
+    os.environ["ODBCINSTINI"] = "/opt/etc/odbcinst.ini"
+    os.environ["LD_LIBRARY_PATH"] = "/opt/lib"
+
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
     logger = logging.getLogger()
 
     drivers = pyodbc.drivers()
     
-    logger.info("Drivers ODBC disponibles: %s", drivers)
+    #logger.info("Drivers ODBC disponibles: %s", drivers)
 
     # Obtenemos el evento
     path = (
