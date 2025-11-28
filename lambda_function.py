@@ -4,6 +4,7 @@ import datetime
 import decimal
 import logging
 from ConexionBD import conectar
+import pyodbc
 
 # helper para serializar tipos de datos
 def serializarDatos(v):
@@ -26,6 +27,11 @@ def serializarDatos(v):
     return str(v)
 
 def lambda_handler(event, context):
+
+    drivers = pyodbc.drivers()
+    
+    logger.info("Drivers ODBC disponibles: %s", drivers)
+
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
     logger = logging.getLogger()
 
