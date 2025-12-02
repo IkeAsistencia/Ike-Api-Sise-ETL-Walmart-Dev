@@ -45,6 +45,8 @@ def lambda_handler(event, context):
     logger.info("Existe /opt/etc/odbcinst.ini: %s", os.path.exists("/opt/etc/odbcinst.ini"))
     logger.info("Existe libmsodbcsql en /opt/lib: %s", any('libmsodbcsql' in f for f in os.listdir('/opt/lib')))
     logger.info("LD_LIBRARY_PATH: %s", os.environ.get('LD_LIBRARY_PATH'))
+    logger.info("ODBCSYSINI: %s", os.environ.get('ODBCSYSINI'))
+    logger.info("ODBCINSTINI: %s", os.environ.get('ODBCINSTINI'))
     # Obtenemos el evento
     path = (
         event.get("rawPath")
