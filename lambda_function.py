@@ -4,7 +4,7 @@ import datetime
 import decimal
 import logging
 from ConexionBD import conectar
-import pyodbc
+import shutil
 import os
 
 # helper para serializar tipos de datos
@@ -28,17 +28,21 @@ def serializarDatos(v):
     return str(v)
 
 def lambda_handler(event, context):   
+    if os.path.exists("/opt/etc/odbcinst.ini"):
+        shutil.copy("/opt/etc/odbcinst.ini", "/tmp/odbcinst.ini")
 
-    os.environ["ODBCSYSINI"] = "/opt/etc"
-    os.environ["ODBCINSTINI"] = "/opt/etc/odbcinst.ini"
-    os.environ["LD_LIBRARY_PATH"] = "/opt/lib"
-
+        # 2. Exportar variables para que unixODBC lea el archivo desde /tmp
+        os.environ["ODBCINSTINI"] = "/tmp/odbcinst.ini"
+        os.environ["ODBCSYSINI"] = "/tmp"  # ubicación base del archivo
+        os.environ["LD_LIBRARY_PATH"] = "/opt/lib:" + os.environ.get("LD_LIBRARY_PATH", "")
+    # Configurar logging
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
     logger = logging.getLogger()
 
+    import pyodbc
     drivers = pyodbc.drivers()
     
-    #logger.info("Drivers ODBC disponibles: %s", drivers)
+    logger.info("Drivers ODBC disponibles: %s", drivers)
 
     # Obtenemos el evento
     path = (
