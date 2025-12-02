@@ -43,7 +43,7 @@ def lambda_handler(event, context):
     drivers = pyodbc.drivers()
     
     logger.info("Drivers ODBC disponibles: %s", drivers)
-
+    print("Drivers ODBC disponibles P:", drivers)
     # Obtenemos el evento
     path = (
         event.get("rawPath")
