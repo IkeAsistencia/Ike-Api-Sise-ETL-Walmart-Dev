@@ -32,11 +32,8 @@ def serializarDatos(v):
 
 def lambda_handler(event, context):   
     if os.path.exists("/opt/etc/odbcinst.ini"):
-        shutil.copy("/opt/etc/odbcinst.ini", "/tmp/odbcinst.ini")
-
-        # 2. Exportar variables para que unixODBC lea el archivo desde /tmp
-        os.environ["ODBCINSTINI"] = "/tmp/odbcinst.ini"
-        os.environ["ODBCSYSINI"] = "/tmp"  # ubicación base del archivo
+        os.environ["ODBCINSTINI"] = "/opt/etc/odbcinst.ini"
+        os.environ["ODBCSYSINI"] = "/opt/etc"  # ubicación base del archivo
         os.environ["LD_LIBRARY_PATH"] = "/opt/lib:" + os.environ.get("LD_LIBRARY_PATH", "")
 
     import pyodbc
