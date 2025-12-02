@@ -31,9 +31,9 @@ def serializarDatos(v):
     return str(v)
 
 def lambda_handler(event, context):   
-    if os.path.exists("/opt/etc/odbcinst.ini"):
-        os.environ["ODBCINSTINI"] = "/opt/etc/odbcinst.ini"
+    if os.path.exists("/opt/etc/odbcinst.ini"):        
         os.environ["ODBCSYSINI"] = "/opt/etc"  # ubicación base del archivo
+        os.environ["ODBCINSTINI"] = "odbcinst.ini"
         os.environ["LD_LIBRARY_PATH"] = "/opt/lib:" + os.environ.get("LD_LIBRARY_PATH", "")
 
     import pyodbc
