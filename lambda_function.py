@@ -6,6 +6,9 @@ import logging
 from ConexionBD import conectar
 import shutil
 import os
+# Configurar logging
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
 
 # helper para serializar tipos de datos
 def serializarDatos(v):
@@ -35,9 +38,6 @@ def lambda_handler(event, context):
         os.environ["ODBCINSTINI"] = "/tmp/odbcinst.ini"
         os.environ["ODBCSYSINI"] = "/tmp"  # ubicación base del archivo
         os.environ["LD_LIBRARY_PATH"] = "/opt/lib:" + os.environ.get("LD_LIBRARY_PATH", "")
-    # Configurar logging
-    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-    logger = logging.getLogger()
 
     import pyodbc
     drivers = pyodbc.drivers()
