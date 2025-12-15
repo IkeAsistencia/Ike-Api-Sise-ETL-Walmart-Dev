@@ -86,7 +86,7 @@ def lambda_handler(event, context):
             }
 
         # conexion a la base de datos y obtencion de datos 
-        
+        logger.info("Inicia conexion a la base de datos")
         try:
             conexion = conectar()
         except Exception as e:
@@ -96,11 +96,13 @@ def lambda_handler(event, context):
                 "headers": {"Content-Type": "application/json"},
                 "body": json.dumps({"error": f"Error de conexion a la base de datos {drivers}"})
             }
+        logger.info("crea cursor y ejecuta consulta")
         cursor = conexion.cursor()
         #cursor.execute("SELECT * FROM DBO.CAFILIADOWBP")
         cursor.execute("EXEC [sp_MigraVentas_WM_API] ?",
                         (2,))
         resultados = cursor.fetchall()
+        logger.info("Consulta ejecutada, filas obtenidas: %d", len(resultados))
         # obtener nombres de columnas (si existen) antes de cerrar cursor
         columnas = [c[0] for c in cursor.description] if cursor.description else []
         cursor.close()
@@ -118,6 +120,7 @@ def lambda_handler(event, context):
                     resultados_json.append([serializarDatos(v) for v in row])
         else:
             resultados_json = []
+        logger.info("Resultados convertidos a JSON, total registros: %d", len(resultados_json))
         '''''    
         datos = [
             {"id": 1, "nombre": "Ricardo", "rol": "Admin"},
