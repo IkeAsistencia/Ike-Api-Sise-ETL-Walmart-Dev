@@ -95,7 +95,8 @@ def lambda_handler(event, context):
             return {
                 "statusCode": 500,
                 "headers": {"Content-Type": "application/json"},
-                "body": json.dumps({"error": f"Error de conexion a la base de datos {drivers}"})
+                "body": json.dumps({"error": f"Error de conexion a la base de datos: {str(e)}", 
+                                    "Drivers": {drivers}})
             }
         logger.info("crea cursor y ejecuta consulta")
         cursor = conexion.cursor()
