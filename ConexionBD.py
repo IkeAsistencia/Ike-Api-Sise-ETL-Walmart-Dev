@@ -14,7 +14,7 @@ def conectar():
         f'PWD={os.getenv("MX_DB_PASSWORD")};'
         'CHARSET=UTF8MB4;'
         "Encrypt=no;"
-        "TrustServerCertificate=yes;"
+        #"TrustServerCertificate=yes;"
     )
     return pyodbc.connect(conexion,timeout=300)
 
