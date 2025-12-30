@@ -12,9 +12,9 @@ def conectar():
         f'DATABASE={os.getenv("MX_DB_NAME")};'
         f'UID={os.getenv("MX_DB_USER")};'
         f'PWD={os.getenv("MX_DB_PASSWORD")};'
-        'CHARSET=UTF8MB4;'
+        'CHARSET=UTF8MB4;'        
+        "Encrypt=no;"
         "TrustServerCertificate=yes;"
-        "Encrypt=yes;"
     )
     return pyodbc.connect(conexion,timeout=300)
 
