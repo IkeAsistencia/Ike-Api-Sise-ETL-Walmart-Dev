@@ -6,6 +6,7 @@ import logging
 from ConexionBD import conectar
 import shutil
 import os
+import ctypes
 # Configurar logging
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -34,7 +35,10 @@ def lambda_handler(event, context):
     if os.path.exists("/opt/etc/odbcinst.ini"):        
         os.environ["ODBCSYSINI"] = "/opt/etc"  # ubicación base del archivo
         os.environ["ODBCINSTINI"] = "odbcinst.ini"
+        os.environ["ODBCINI"] = "/opt/etc/odbc.ini"
         os.environ["LD_LIBRARY_PATH"] = "/opt/lib:" + os.environ.get("LD_LIBRARY_PATH", "")
+        ctypes.CDLL("/opt/lib/libtdsodbc.so")
+
 
     import pyodbc
     drivers = pyodbc.drivers()
