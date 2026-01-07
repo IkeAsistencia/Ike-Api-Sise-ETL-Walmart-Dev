@@ -14,8 +14,8 @@ def conectar():
         f'DATABASE={os.getenv("MX_DB_NAME")};'
         f'UID={os.getenv("MX_DB_USER")};'
         f'PWD={os.getenv("MX_DB_PASSWORD")};'
-        'TDS_Version=7.2;'
-        'ClientCharset=UTF-8;'
+        #'TDS_Version=7.2;'
+        #'ClientCharset=UTF-8;'
         #"Encrypt=no;"
         #"TrustServerCertificate=yes;"
     )

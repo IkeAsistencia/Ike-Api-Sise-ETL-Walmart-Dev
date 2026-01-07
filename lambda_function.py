@@ -58,9 +58,11 @@ def lambda_handler(event, context):
     with open("/tmp/freetds.conf", "w") as f:
         f.write("""
     [global]
-        tds version = 7.2
+        tds version = 7.1
         encryption = off
         client charset = UTF-8
+        timeout = 30
+        connect timeout = 30
     """)
 
     os.environ["FREETDSCONF"] = "/tmp/freetds.conf"
