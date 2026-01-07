@@ -55,6 +55,16 @@ def lambda_handler(event, context):
     os.environ["TDSDUMP"] = "/tmp/tds.log"
     os.environ["TDSDUMPLEVEL"] = "10"
 
+    with open("/tmp/freetds.conf", "w") as f:
+        f.write("""
+    [global]
+        tds version = 7.2
+        encryption = off
+        client charset = UTF-8
+    """)
+
+    os.environ["FREETDSCONF"] = "/tmp/freetds.conf"
+
     #logger.info("Existe /opt/etc/odbcinst.ini: %s", os.path.exists("/opt/etc/odbcinst.ini"))
     #logger.info("Existe libmsodbcsql en /opt/lib: %s", any('libmsodbcsql' in f for f in os.listdir('/opt/lib')))
     #logger.info("LD_LIBRARY_PATH: %s", os.environ.get('LD_LIBRARY_PATH'))
