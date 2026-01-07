@@ -52,7 +52,8 @@ def lambda_handler(event, context):
     s.connect((os.getenv("MX_DB_SERVER"), int(os.getenv("MX_DB_PORT"))))
     print("Conexión TCP OK")
 
-
+    os.environ["TDSDUMP"] = "/tmp/tds.log"
+    os.environ["TDSDUMPLEVEL"] = "10"
 
     #logger.info("Existe /opt/etc/odbcinst.ini: %s", os.path.exists("/opt/etc/odbcinst.ini"))
     #logger.info("Existe libmsodbcsql en /opt/lib: %s", any('libmsodbcsql' in f for f in os.listdir('/opt/lib')))
@@ -104,6 +105,8 @@ def lambda_handler(event, context):
             conexion = conectar()
         except Exception as e:
             logger.error("Error de conexion a la base de datos: %s", str(e))
+            with open("/tmp/tds.log", "r") as f:
+                print(f.read())
             return {
                 "statusCode": 500,
                 "headers": {"Content-Type": "application/json"},
