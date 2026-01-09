@@ -44,7 +44,7 @@ def lambda_handler(event, context):
             connect timeout = 30
         """)
 
-        with open("/opt/etc/odbc.ini", "w") as f:
+        with open("/tmp/odbc.ini", "w") as f:
             f.write("""
         [SQLSERVER]
             Driver      = FreeTDS
@@ -57,7 +57,7 @@ def lambda_handler(event, context):
         """)
         os.environ["ODBCSYSINI"] = "/opt/etc"  # ubicación base del archivo
         os.environ["ODBCINSTINI"] = "odbcinst.ini"
-        os.environ["ODBCINI"] = "/opt/etc/odbc.ini"
+        os.environ["ODBCINI"] = "/tmp/odbc.ini"
         os.environ["LD_LIBRARY_PATH"] = "/opt/lib:" + os.environ.get("LD_LIBRARY_PATH", "")
         ctypes.CDLL("/opt/lib/libtdsodbc.so")
 
