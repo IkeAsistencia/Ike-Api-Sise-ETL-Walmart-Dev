@@ -32,13 +32,39 @@ def serializarDatos(v):
     return str(v)
 
 def lambda_handler(event, context):   
-    if os.path.exists("/opt/etc/odbcinst.ini"):        
+    if os.path.exists("/opt/etc/odbcinst.ini"):   
+        
+        with open("/tmp/freetds.conf", "w") as f:
+            f.write("""
+        [global]
+            tds version = 7.1
+            encryption = off
+            client charset = UTF-8
+            timeout = 30
+            connect timeout = 30
+        """)
+
+        with open("/opt/etc/odbc.ini", "w") as f:
+            f.write("""
+        [SQLSERVER]
+            Driver      = FreeTDS
+            Server      = 172.21.10.185
+            Port        = 21518
+            Database    = IKE_QA
+            TDS_Version = 7.2
+            ClientCharset = UTF-8
+            Encrypt     = no
+        """)
         os.environ["ODBCSYSINI"] = "/opt/etc"  # ubicación base del archivo
         os.environ["ODBCINSTINI"] = "odbcinst.ini"
         os.environ["ODBCINI"] = "/opt/etc/odbc.ini"
         os.environ["LD_LIBRARY_PATH"] = "/opt/lib:" + os.environ.get("LD_LIBRARY_PATH", "")
         ctypes.CDLL("/opt/lib/libtdsodbc.so")
 
+        os.environ["TDSDUMP"] = "/tmp/tds.log"
+        os.environ["TDSDUMPLEVEL"] = "10"
+
+        os.environ["FREETDSCONF"] = "/tmp/freetds.conf"
 
     import pyodbc
     drivers = pyodbc.drivers()
@@ -51,21 +77,6 @@ def lambda_handler(event, context):
     s.settimeout(5)
     s.connect((os.getenv("MX_DB_SERVER"), int(os.getenv("MX_DB_PORT"))))
     print("Conexión TCP OK")
-
-    os.environ["TDSDUMP"] = "/tmp/tds.log"
-    os.environ["TDSDUMPLEVEL"] = "10"
-
-    with open("/tmp/freetds.conf", "w") as f:
-        f.write("""
-    [global]
-        tds version = 7.1
-        encryption = off
-        client charset = UTF-8
-        timeout = 30
-        connect timeout = 30
-    """)
-
-    os.environ["FREETDSCONF"] = "/tmp/freetds.conf"
 
     #logger.info("Existe /opt/etc/odbcinst.ini: %s", os.path.exists("/opt/etc/odbcinst.ini"))
     #logger.info("Existe libmsodbcsql en /opt/lib: %s", any('libmsodbcsql' in f for f in os.listdir('/opt/lib')))
@@ -117,8 +128,9 @@ def lambda_handler(event, context):
             conexion = conectar()
         except Exception as e:
             logger.error("Error de conexion a la base de datos: %s", str(e))
-            with open("/tmp/tds.log", "r") as f:
-                print(f.read())
+            if os.path.exists("/tmp/tds.log"):
+                with open("/tmp/tds.log", "r") as f:
+                    print(f.read())
             return {
                 "statusCode": 500,
                 "headers": {"Content-Type": "application/json"},
