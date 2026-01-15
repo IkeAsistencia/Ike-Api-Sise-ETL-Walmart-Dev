@@ -75,7 +75,7 @@ def lambda_handler(event, context):
     import socket
     s = socket.socket()
     s.settimeout(5)
-    s.connect((os.getenv("MX_DB_SERVER"), int(os.getenv("MX_DB_PORT"))))
+    s.connect((os.getenv("MX_DB_SERVER"), os.getenv("MX_DB_PORT")))
     print("Conexión TCP OK")
 
     #logger.info("Existe /opt/etc/odbcinst.ini: %s", os.path.exists("/opt/etc/odbcinst.ini"))
@@ -117,7 +117,7 @@ def lambda_handler(event, context):
         #'''''
         if api_key != "6C445EE74E342785F8027BFCC0A1170C":
             return {
-                "statusCode": 403,
+                "statusCode": 401,
                 "headers": {"Content-Type": "application/json"},
                 "body": json.dumps({"error": "Acceso no autorizado: API Key invalida"})
             }
