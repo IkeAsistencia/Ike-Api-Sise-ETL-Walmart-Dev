@@ -13,6 +13,7 @@ logger.setLevel(logging.INFO)
 
 # helper para serializar tipos de datos
 def serializarDatos(v):
+    
     if v is None:
         return None
     if isinstance(v, (str, int, float, bool)):
@@ -31,7 +32,15 @@ def serializarDatos(v):
             return str(v)
     return str(v)
 
-def lambda_handler(event, context):   
+def lambda_handler(event, context):
+    import socket
+    try:
+        sock = socket.create_connection((os.getenv("MX_DB_SERVER"), os.getenv("MX_DB_PORT")), timeout=5)
+        sock.close()
+        return "OK: Lambda puede alcanzar el host y el puerto."
+    except Exception as e:
+        return f"ERROR: No se puede conectar a {os.getenv("MX_DB_SERVER")}:{os.getenv("MX_DB_PORT")} -> {str(e)}"
+def prueba():
     if os.path.exists("/opt/etc/odbcinst.ini"):   
         
         with open("/tmp/freetds.conf", "w") as f:
