@@ -40,7 +40,7 @@ def lambda_handler(event, context):
         print("OK: Lambda puede alcanzar el host y el puerto.")
         return "OK: Lambda puede alcanzar el host y el puerto."
     except Exception as e:
-        print("ERROR: Lambda no puede alcanzar el host y el puerto.")
+        print("ERROR: Lambda no puede alcanzar el host y el puerto: ", str(e))
         return f"ERROR: No se puede conectar a {os.getenv("MX_DB_SERVER")}:{os.getenv("MX_DB_PORT")} -> {str(e)}"
 def prueba():
     if os.path.exists("/opt/etc/odbcinst.ini"):   
