@@ -37,8 +37,10 @@ def lambda_handler(event, context):
     try:
         sock = socket.create_connection((os.getenv("MX_DB_SERVER"), os.getenv("MX_DB_PORT")), timeout=5)
         sock.close()
+        print("OK: Lambda puede alcanzar el host y el puerto.")
         return "OK: Lambda puede alcanzar el host y el puerto."
     except Exception as e:
+        print("ERROR: Lambda no puede alcanzar el host y el puerto.")
         return f"ERROR: No se puede conectar a {os.getenv("MX_DB_SERVER")}:{os.getenv("MX_DB_PORT")} -> {str(e)}"
 def prueba():
     if os.path.exists("/opt/etc/odbcinst.ini"):   
