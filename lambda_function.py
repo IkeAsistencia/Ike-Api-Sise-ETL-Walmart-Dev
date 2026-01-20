@@ -213,4 +213,34 @@ def menu(event, context):
         }
     
 def lambda_handler(event, context):
-    return menu(event, context)
+    #return menu(event, context)
+    import pyodbc
+ 
+    # Cadena de conexión directa con ODBC Driver 18 para SQL Server sin cifrado (Encrypt=no)
+    connection_string = (
+        'Driver={ODBC Driver 18 for SQL Server};'  # Usamos ODBC Driver 18
+        f'Server={os.getenv("MX_DB_SERVER")},{os.getenv("MX_DB_PORT")};'       # Dirección IP o nombre del servidor SQL
+        f'Database={os.getenv("MX_DB_NAME")};'            # Nombre de la base de datos
+        f'UID={os.getenv("MX_DB_USER")};'                          # Nombre de usuario de SQL Server
+        f'PWD={os.getenv("MX_DB_PASSWORD")};'                      # Contraseña de usuario de SQL Server
+        'Encrypt=no;'                             # Deshabilitar encriptación SSL/TLS
+        'TrustServerCertificate=yes;'             # Aceptar certificados del servidor sin validación
+    )
+ 
+    # Intentar conectarse a la base de datos
+    try:
+        # Establecer conexión
+        conn = pyodbc.connect(connection_string)
+        print("Conexión exitosa!")
+        # Realizar alguna consulta o interacción con la base de datos
+        cursor = conn.cursor()
+        cursor.execute("SELECT 1")
+        print(cursor.fetchone())
+    
+    except pyodbc.Error as e:
+        print("Error de conexión:", e)
+    
+    finally:
+        # Cerrar la conexión cuando ya no sea necesaria
+        if 'conn' in locals() and conn:
+            conn.close()
