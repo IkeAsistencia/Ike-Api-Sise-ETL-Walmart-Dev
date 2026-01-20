@@ -20,7 +20,7 @@ def conectar():
     )
 
     if driv == "FreeTDS":
-        conexion += "TDS_Version=7.2;Encrypt=no;"
+        conexion += "TDS_Version=7.3;Encrypt=no;"
     else:
         conexion += "Encrypt=yes;TrustServerCertificate=yes;"
     return pyodbc.connect(conexion,timeout=300)
