@@ -32,7 +32,8 @@ def serializarDatos(v):
             return str(v)
     return str(v)
 
-def lambda_handler(event, context):
+
+def test_tcp_connection():
     import socket
     try:
         sock = socket.create_connection((os.getenv("MX_DB_SERVER"), os.getenv("MX_DB_PORT")), timeout=5)
@@ -42,7 +43,7 @@ def lambda_handler(event, context):
     except Exception as e:
         print("ERROR: Lambda no puede alcanzar el host y el puerto: ", str(e))
         return f"ERROR: No se puede conectar a {os.getenv("MX_DB_SERVER")}:{os.getenv("MX_DB_PORT")} -> {str(e)}"
-def prueba():
+def menu(event, context):
     if os.path.exists("/opt/etc/odbcinst.ini"):   
         
         with open("/tmp/freetds.conf", "w") as f:
@@ -210,3 +211,6 @@ def prueba():
             "headers": {"Content-Type": "application/json"},
             "body": json.dumps({"error": f"Ruta no encontrada: {path}"})
         }
+    
+def lambda_handler(event, context):
+    return menu(event, context)
