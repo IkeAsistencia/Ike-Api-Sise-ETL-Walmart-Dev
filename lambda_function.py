@@ -50,7 +50,7 @@ def menu(event, context):
             f.write("""
         [global]
             tds version = 7.2
-            encryption = off
+            encryption = request
             client charset = UTF-8
             timeout = 30
             connect timeout = 30
