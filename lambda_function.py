@@ -49,7 +49,7 @@ def menu(event, context):
         with open("/tmp/freetds.conf", "w") as f:
             f.write("""
         [global]
-            tds version = 7.1
+            tds version = 7.2
             encryption = off
             client charset = UTF-8
             timeout = 30
@@ -77,6 +77,8 @@ def menu(event, context):
         os.environ["TDSDUMPLEVEL"] = "10"
 
         os.environ["FREETDSCONF"] = "/tmp/freetds.conf"
+
+        os.environ["OPENSSL_CONF"] = "/opt/ssl/openssl.cnf"
 
     import pyodbc
     drivers = pyodbc.drivers()
@@ -213,24 +215,26 @@ def menu(event, context):
         }
     
 def lambda_handler(event, context):
-    #return menu(event, context)
+    return menu(event, context)
+
+def PruebaBasicaConexion():
     import pyodbc
  
     # Cadena de conexión directa con ODBC Driver 18 para SQL Server sin cifrado (Encrypt=no)
     connection_string = (
-        'Driver={ODBC Driver 18 for SQL Server};'  # Usamos ODBC Driver 18
-        f'Server={os.getenv("MX_DB_SERVER")},{os.getenv("MX_DB_PORT")};'       # Dirección IP o nombre del servidor SQL
-        f'Database={os.getenv("MX_DB_NAME")};'            # Nombre de la base de datos
-        f'UID={os.getenv("MX_DB_USER")};'                          # Nombre de usuario de SQL Server
-        f'PWD={os.getenv("MX_DB_PASSWORD")};'                      # Contraseña de usuario de SQL Server
-        'Encrypt=no;'                             # Deshabilitar encriptación SSL/TLS
-        'TrustServerCertificate=yes;'             # Aceptar certificados del servidor sin validación
+        'Driver={FreeTDS};'                                              # Usamos ODBC Driver 18
+        f'Server={os.getenv("MX_DB_SERVER")},{os.getenv("MX_DB_PORT")};' # Dirección IP o nombre del servidor SQL
+        f'Database={os.getenv("MX_DB_NAME")};'                           # Nombre de la base de datos
+        f'UID={os.getenv("MX_DB_USER")};'                                # Nombre de usuario de SQL Server
+        f'PWD={os.getenv("MX_DB_PASSWORD")};'                            # Contraseña de usuario de SQL Server
+        'Encrypt=no;'                                                    # Deshabilitar encriptación SSL/TLS
+        'TrustServerCertificate=yes;'                                    # Aceptar certificados del servidor sin validación
     )
  
     # Intentar conectarse a la base de datos
     try:
         # Establecer conexión
-        conn = pyodbc.connect(connection_string)
+        conn = pyodbc.connect(connection_string,timeout=300)
         print("Conexión exitosa!")
         # Realizar alguna consulta o interacción con la base de datos
         cursor = conn.cursor()
