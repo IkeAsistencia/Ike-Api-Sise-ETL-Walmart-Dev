@@ -44,7 +44,7 @@ def test_tcp_connection():
         print("ERROR: Lambda no puede alcanzar el host y el puerto: ", str(e))
         return f"ERROR: No se puede conectar a {os.getenv("MX_DB_SERVER")}:{os.getenv("MX_DB_PORT")} -> {str(e)}"
 def menu(event, context):
-    #if os.path.exists("/opt/etc/odbcinst.ini"):   
+    if os.path.exists("/opt/etc/odbcinst.ini"):   
     #    
     #    with open("/tmp/freetds.conf", "w") as f:
     #        f.write("""
@@ -67,14 +67,14 @@ def menu(event, context):
     #        ClientCharset = UTF-8
     #        Encrypt     = no
     #    """)
-    #    os.environ["ODBCSYSINI"] = "/opt/etc"  # ubicación base del archivo
-    #    os.environ["ODBCINSTINI"] = "odbcinst.ini"
+        os.environ["ODBCSYSINI"] = "/opt/etc"  # ubicación base del archivo
+        os.environ["ODBCINSTINI"] = "odbcinst.ini"
     #    os.environ["ODBCINI"] = "/tmp/odbc.ini"
-    #    os.environ["LD_LIBRARY_PATH"] = "/opt/lib:" + os.environ.get("LD_LIBRARY_PATH", "")
+        os.environ["LD_LIBRARY_PATH"] = "/opt/lib:" + os.environ.get("LD_LIBRARY_PATH", "")
     #    ctypes.CDLL("/opt/lib/libtdsodbc.so")
 #
-    #    os.environ["TDSDUMP"] = "/tmp/tds.log"
-    #    os.environ["TDSDUMPLEVEL"] = "10"
+        os.environ["TDSDUMP"] = "/tmp/tds.log"
+        os.environ["TDSDUMPLEVEL"] = "10"
 #
     #    os.environ["FREETDSCONF"] = "/tmp/freetds.conf"
 #
