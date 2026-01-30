@@ -44,41 +44,41 @@ def test_tcp_connection():
         print("ERROR: Lambda no puede alcanzar el host y el puerto: ", str(e))
         return f"ERROR: No se puede conectar a {os.getenv("MX_DB_SERVER")}:{os.getenv("MX_DB_PORT")} -> {str(e)}"
 def menu(event, context):
-    if os.path.exists("/opt/etc/odbcinst.ini"):   
-        
-        with open("/tmp/freetds.conf", "w") as f:
-            f.write("""
-        [global]
-            tds version = 7.2
-            encryption = request
-            client charset = UTF-8
-            timeout = 30
-            connect timeout = 30
-        """)
-
-        with open("/tmp/odbc.ini", "w") as f:
-            f.write("""
-        [SQLSERVER]
-            Driver      = FreeTDS
-            Server      = 172.21.10.185
-            Port        = 21518
-            Database    = IKE_QA
-            TDS_Version = 7.2
-            ClientCharset = UTF-8
-            Encrypt     = no
-        """)
-        os.environ["ODBCSYSINI"] = "/opt/etc"  # ubicación base del archivo
-        os.environ["ODBCINSTINI"] = "odbcinst.ini"
-        os.environ["ODBCINI"] = "/tmp/odbc.ini"
-        os.environ["LD_LIBRARY_PATH"] = "/opt/lib:" + os.environ.get("LD_LIBRARY_PATH", "")
-        ctypes.CDLL("/opt/lib/libtdsodbc.so")
-
-        os.environ["TDSDUMP"] = "/tmp/tds.log"
-        os.environ["TDSDUMPLEVEL"] = "10"
-
-        os.environ["FREETDSCONF"] = "/tmp/freetds.conf"
-
-        os.environ["OPENSSL_CONF"] = "/opt/ssl/openssl.cnf"
+    #if os.path.exists("/opt/etc/odbcinst.ini"):   
+    #    
+    #    with open("/tmp/freetds.conf", "w") as f:
+    #        f.write("""
+    #    [global]
+    #        tds version = 7.2
+    #        encryption = request
+    #        client charset = UTF-8
+    #        timeout = 30
+    #        connect timeout = 30
+    #    """)
+#
+    #    with open("/tmp/odbc.ini", "w") as f:
+    #        f.write("""
+    #    [SQLSERVER]
+    #        Driver      = FreeTDS
+    #        Server      = 172.21.10.185
+    #        Port        = 21518
+    #        Database    = IKE_QA
+    #        TDS_Version = 7.2
+    #        ClientCharset = UTF-8
+    #        Encrypt     = no
+    #    """)
+    #    os.environ["ODBCSYSINI"] = "/opt/etc"  # ubicación base del archivo
+    #    os.environ["ODBCINSTINI"] = "odbcinst.ini"
+    #    os.environ["ODBCINI"] = "/tmp/odbc.ini"
+    #    os.environ["LD_LIBRARY_PATH"] = "/opt/lib:" + os.environ.get("LD_LIBRARY_PATH", "")
+    #    ctypes.CDLL("/opt/lib/libtdsodbc.so")
+#
+    #    os.environ["TDSDUMP"] = "/tmp/tds.log"
+    #    os.environ["TDSDUMPLEVEL"] = "10"
+#
+    #    os.environ["FREETDSCONF"] = "/tmp/freetds.conf"
+#
+    #    os.environ["OPENSSL_CONF"] = "/opt/ssl/openssl.cnf"
 
     import pyodbc
     drivers = pyodbc.drivers()
