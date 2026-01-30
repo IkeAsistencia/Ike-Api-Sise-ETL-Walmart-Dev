@@ -25,6 +25,9 @@ def conectar():
         conexion += "Encrypt=yes;TrustServerCertificate=yes;"
     return pyodbc.connect(conexion,timeout=300)
 
+def get_Drivers():
+    drivers = pyodbc.drivers()
+    return drivers
 #comprobar la conexion
 '''
 from dotenv import load_dotenv

@@ -3,10 +3,9 @@ import base64
 import datetime
 import decimal
 import logging
-from ConexionBD import conectar
-import shutil
+from ConexionBD import conectar, get_Drivers
 import os
-import ctypes
+
 # Configurar logging
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -32,72 +31,22 @@ def serializarDatos(v):
             return str(v)
     return str(v)
 
-
-def test_tcp_connection():
-    import socket
-    try:
-        sock = socket.create_connection((os.getenv("MX_DB_SERVER"), os.getenv("MX_DB_PORT")), timeout=5)
-        sock.close()
-        print("OK: Lambda puede alcanzar el host y el puerto.")
-        return "OK: Lambda puede alcanzar el host y el puerto."
-    except Exception as e:
-        print("ERROR: Lambda no puede alcanzar el host y el puerto: ", str(e))
-        return f"ERROR: No se puede conectar a {os.getenv("MX_DB_SERVER")}:{os.getenv("MX_DB_PORT")} -> {str(e)}"
 def menu(event, context):
     if os.path.exists("/opt/etc/odbcinst.ini"):   
-    #    
-    #    with open("/tmp/freetds.conf", "w") as f:
-    #        f.write("""
-    #    [global]
-    #        tds version = 7.2
-    #        encryption = request
-    #        client charset = UTF-8
-    #        timeout = 30
-    #        connect timeout = 30
-    #    """)
-#
-    #    with open("/tmp/odbc.ini", "w") as f:
-    #        f.write("""
-    #    [SQLSERVER]
-    #        Driver      = FreeTDS
-    #        Server      = 172.21.10.185
-    #        Port        = 21518
-    #        Database    = IKE_QA
-    #        TDS_Version = 7.2
-    #        ClientCharset = UTF-8
-    #        Encrypt     = no
-    #    """)
+
         os.environ["ODBCSYSINI"] = "/opt/etc"  # ubicación base del archivo
         os.environ["ODBCINSTINI"] = "odbcinst.ini"
-    #    os.environ["ODBCINI"] = "/tmp/odbc.ini"
         os.environ["LD_LIBRARY_PATH"] = "/opt/lib:" + os.environ.get("LD_LIBRARY_PATH", "")
-    #    ctypes.CDLL("/opt/lib/libtdsodbc.so")
-#
+
         os.environ["TDSDUMP"] = "/tmp/tds.log"
         os.environ["TDSDUMPLEVEL"] = "10"
-#
-    #    os.environ["FREETDSCONF"] = "/tmp/freetds.conf"
-#
-    #    os.environ["OPENSSL_CONF"] = "/opt/ssl/openssl.cnf"
+        logger.info("Variables de entorno para ODBC configuradas.")
 
-    import pyodbc
-    drivers = pyodbc.drivers()
+    drivers = get_Drivers()
     
     logger.info("Drivers ODBC disponibles: %s", drivers)
     print("Drivers ODBC disponibles P:", drivers)
 
-    #import socket
-    #s = socket.socket()
-    #s.settimeout(5)
-    #s.connect((os.getenv("MX_DB_SERVER"), os.getenv("MX_DB_PORT")))
-    #print("Conexión TCP OK")
-
-    #logger.info("Existe /opt/etc/odbcinst.ini: %s", os.path.exists("/opt/etc/odbcinst.ini"))
-    #logger.info("Existe libmsodbcsql en /opt/lib: %s", any('libmsodbcsql' in f for f in os.listdir('/opt/lib')))
-    #logger.info("LD_LIBRARY_PATH: %s", os.environ.get('LD_LIBRARY_PATH'))
-    #logger.info("ODBCSYSINI: %s", os.environ.get('ODBCSYSINI'))
-    #logger.info("ODBCINSTINI: %s", os.environ.get('ODBCINSTINI'))
-    
     # Obtenemos el evento
     path = (
         event.get("rawPath")
@@ -108,8 +57,6 @@ def menu(event, context):
 
     #Preparación para token o autenticación si es necesario
     headers = event.get("headers", {}) or {}
-    token = headers.get("Authorization")
-
 
     # ruta raiz con get
     if path == "/as" and method == "GET":
@@ -153,7 +100,7 @@ def menu(event, context):
             }
         logger.info("crea cursor y ejecuta consulta")
         cursor = conexion.cursor()
-        #cursor.execute("SELECT * FROM DBO.CAFILIADOWBP")
+
         cursor.execute("EXEC [sp_MigraVentas_WM_API] ?",
                         (2,))
         resultados = cursor.fetchall()
@@ -176,23 +123,7 @@ def menu(event, context):
         else:
             resultados_json = []
         logger.info("Resultados convertidos a JSON, total registros: %d", len(resultados_json))
-        '''''    
-        datos = [
-            {"id": 1, "nombre": "Ricardo", "rol": "Admin"},
-            {"id": 2, "nombre": "Laura", "rol": "Usuario"},
-        ]
-        #logger.info("Datos de BD: %s", resultados)
-        #logger.info("Datos a exportar: %s", datos)
-        #logger.info("Datos de BD (convertidos): %s", resultados_json)
-        #CSV
-        # Generamos titulos y filas        
-        muestraData = "id,nombre,rol\n"
-        for d in datos:
-            muestraData += f"{d['id']},{d['nombre']},{d['rol']}\n"
-
-        # Codificamos el CSV en Base64 para que AWS no lo rompa
-        csv_b64 = base64.b64encode(muestraData.encode("utf-8")).decode("utf-8")
-        '''
+        
         #respuesta en JSON
         return {
             "statusCode": 200,
@@ -217,34 +148,3 @@ def menu(event, context):
 def lambda_handler(event, context):
     return menu(event, context)
 
-def PruebaBasicaConexion():
-    import pyodbc
- 
-    # Cadena de conexión directa con ODBC Driver 18 para SQL Server sin cifrado (Encrypt=no)
-    connection_string = (
-        'Driver={FreeTDS};'                                              # Usamos ODBC Driver 18
-        f'Server={os.getenv("MX_DB_SERVER")},{os.getenv("MX_DB_PORT")};' # Dirección IP o nombre del servidor SQL
-        f'Database={os.getenv("MX_DB_NAME")};'                           # Nombre de la base de datos
-        f'UID={os.getenv("MX_DB_USER")};'                                # Nombre de usuario de SQL Server
-        f'PWD={os.getenv("MX_DB_PASSWORD")};'                            # Contraseña de usuario de SQL Server
-        'Encrypt=no;'                                                    # Deshabilitar encriptación SSL/TLS
-        'TrustServerCertificate=yes;'                                    # Aceptar certificados del servidor sin validación
-    )
- 
-    # Intentar conectarse a la base de datos
-    try:
-        # Establecer conexión
-        conn = pyodbc.connect(connection_string,timeout=300)
-        print("Conexión exitosa!")
-        # Realizar alguna consulta o interacción con la base de datos
-        cursor = conn.cursor()
-        cursor.execute("SELECT 1")
-        print(cursor.fetchone())
-    
-    except pyodbc.Error as e:
-        print("Error de conexión:", e)
-    
-    finally:
-        # Cerrar la conexión cuando ya no sea necesaria
-        if 'conn' in locals() and conn:
-            conn.close()
