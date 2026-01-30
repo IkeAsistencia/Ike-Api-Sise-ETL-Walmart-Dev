@@ -77,6 +77,7 @@ def menu(event, context):
         logger.info("API Key recibida: %s", api_key)
         #'''''
         if api_key != f'{os.getenv("api_key")}':#"6C445EE74E342785F8027BFCC0A1170C":
+            logger.warning("Acceso no autorizado: API Key invalida")
             return {
                 "statusCode": 401,
                 "headers": {"Content-Type": "application/json"},
@@ -139,6 +140,7 @@ def menu(event, context):
 
     # Ruta no encontrada
     else:
+        logger.warning("Ruta no encontrada: %s", path)
         return {
             "statusCode": 404,
             "headers": {"Content-Type": "application/json"},
