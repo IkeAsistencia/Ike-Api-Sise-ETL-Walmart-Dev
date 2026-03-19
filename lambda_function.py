@@ -74,7 +74,7 @@ def menu(event, context):
     elif path == "/" and method == "GET":
         #Obtener la variable api-key de el header y validarla
         api_key = headers.get("api-key")         
-        logger.info("API Key recibida: %s", api_key)
+        #logger.info("API Key recibida: %s", api_key)
         #'''''
         if api_key != f'{os.getenv("api_key")}':#"6C445EE74E342785F8027BFCC0A1170C":
             logger.warning("Acceso no autorizado: API Key invalida")
@@ -140,11 +140,12 @@ def menu(event, context):
 
     # Ruta no encontrada
     else:
-        logger.warning("Ruta no encontrada: %s", path)
+        safe_path = (path or "").replace("\n", "").replace("\r", "")
+        logger.warning("Ruta no encontrada: %s", safe_path)
         return {
             "statusCode": 404,
             "headers": {"Content-Type": "application/json"},
-            "body": json.dumps({"error": f"Ruta no encontrada: {path}"})
+            "body": json.dumps({"error": f"Ruta no encontrada: {safe_path}"})
         }
     
 def lambda_handler(event, context):
