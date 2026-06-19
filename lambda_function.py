@@ -54,6 +54,11 @@ def menu(event, context):
         or "/"
     )
     method = event.get("requestContext", {}).get("http", {}).get("method", "GET")
+    
+    query_params = event.get("queryStringParameters") or {}
+
+    page = int(query_params.get("page", 1))
+    page_size = int(query_params.get("pageSize", 10000))
 
     #Preparación para token o autenticación si es necesario
     headers = event.get("headers", {}) or {}
