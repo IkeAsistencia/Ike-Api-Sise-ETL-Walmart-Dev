@@ -107,9 +107,22 @@ def menu(event, context):
         logger.info("crea cursor y ejecuta consulta")
         cursor = conexion.cursor()
 
-        cursor.execute("EXEC [sp_MigraVentas_WM_API] ?",
-                        (2,))
+        cursor.execute("EXEC sp_MigraVentas_WM_API ?,?",
+                        (2,page))
+        
+        # Metadata
+        meta = cursor.fetchone()
+
+        total_records = meta.TotalRecords
+        total_pages = meta.TotalPages
+        current_page = meta.CurrentPage
+        page_size = meta.PageSize
+
+        # Segundo result set
+        cursor.nextset()
+
         resultados = cursor.fetchall()
+
         logger.info("Consulta ejecutada, filas obtenidas: %d", len(resultados))
         # obtener nombres de columnas (si existen) antes de cerrar cursor
         columnas = [c[0] for c in cursor.description] if cursor.description else []
@@ -117,6 +130,7 @@ def menu(event, context):
         conexion.close()
 
         # Convertir resultados filas a lista de diccionarios JSON-serializables
+        '''
         resultados_json = []
         if resultados:
             if columnas:
@@ -128,9 +142,20 @@ def menu(event, context):
                     resultados_json.append([serializarDatos(v) for v in row])
         else:
             resultados_json = []
+        '''
+
+        resultados_json = [
+            {
+                col: serializarDatos(val)
+                for col, val in zip(columnas, row)
+            }
+            for row in resultados
+        ] if resultados and columnas else []
+
         logger.info("Resultados convertidos a JSON, total registros: %d", len(resultados_json))
         
         #respuesta en JSON
+        '''
         return {
             "statusCode": 200,
             "headers": {
@@ -141,6 +166,22 @@ def menu(event, context):
             "body": json.dumps({
                "data": resultados_json
             }, ensure_ascii=False)
+        }'''
+        return {
+            "statusCode": 200,
+            "headers": {
+                "Content-Type": "application/json"
+            },
+            "body": json.dumps({
+                "metadata": {
+                    "currentPage": current_page,
+                    "pageSize": page_size,
+                    "totalRecords": total_records,
+                    "totalPages": total_pages
+                    #"hasMore": current_page < total_pages
+                },
+                "data": resultados_json
+            }, ensure_ascii=False, default=str)
         }
 
     # Ruta no encontrada
