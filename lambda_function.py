@@ -107,8 +107,8 @@ def menu(event, context):
         logger.info("crea cursor y ejecuta consulta")
         cursor = conexion.cursor()
 
-        cursor.execute("EXEC sp_MigraVentas_WM_API ?,?,?",
-                        (2,page,page_size))
+        cursor.execute("EXEC sp_MigraVentas_WM_API ?,?",
+                        (2,page))
         
         # Metadata
         meta = cursor.fetchone()
