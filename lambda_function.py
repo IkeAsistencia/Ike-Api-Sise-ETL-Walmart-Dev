@@ -5,10 +5,16 @@ import decimal
 import logging
 from ConexionBD import conectar, get_Drivers
 import os
+import re
 
 # Configurar logging
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
+
+def sanitize_for_log(value):
+    if value is None:
+        return ""
+    return re.sub(r"[\x00-\x1F\x7F]", "", str(value))
 
 # helper para serializar tipos de datos
 def serializarDatos(v):
@@ -186,7 +192,8 @@ def menu(event, context):
 
     # Ruta no encontrada
     else:
-        safe_path = (path or "").replace("\n", "").replace("\r", "")
+        #safe_path = (path or "").replace("\n", "").replace("\r", "")
+        safe_path = sanitize_for_log(path)
         logger.warning("Ruta no encontrada: %s", safe_path)
         return {
             "statusCode": 404,
