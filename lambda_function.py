@@ -135,21 +135,6 @@ def menu(event, context):
         cursor.close()
         conexion.close()
 
-        # Convertir resultados filas a lista de diccionarios JSON-serializables
-        '''
-        resultados_json = []
-        if resultados:
-            if columnas:
-                for row in resultados:
-                    fila = {col: serializarDatos(val) for col, val in zip(columnas, row)}
-                    resultados_json.append(fila)
-            else:
-                for row in resultados:
-                    resultados_json.append([serializarDatos(v) for v in row])
-        else:
-            resultados_json = []
-        '''
-
         resultados_json = [
             {
                 col: serializarDatos(val)
@@ -160,19 +145,6 @@ def menu(event, context):
 
         logger.info("Resultados convertidos a JSON, total registros: %d", len(resultados_json))
         
-        #respuesta en JSON
-        '''
-        return {
-            "statusCode": 200,
-            "headers": {
-                "Content-Type": "application/json",
-                #"Content-Type": "text/csv",
-                #"Content-Disposition": "attachment; filename=consulta.csv"
-            },
-            "body": json.dumps({
-               "data": resultados_json
-            }, ensure_ascii=False)
-        }'''
         return {
             "statusCode": 200,
             "headers": {
@@ -184,7 +156,6 @@ def menu(event, context):
                     "pageSize": page_size,
                     "totalRecords": total_records,
                     "totalPages": total_pages
-                    #"hasMore": current_page < total_pages
                 },
                 "data": resultados_json
             }, ensure_ascii=False, default=str)
@@ -192,7 +163,6 @@ def menu(event, context):
 
     # Ruta no encontrada
     else:
-        #safe_path = (path or "").replace("\n", "").replace("\r", "")
         safe_path = sanitize_for_log(path)
         logger.warning("Ruta no encontrada: %s", safe_path)
         return {

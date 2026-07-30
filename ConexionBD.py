@@ -28,20 +28,3 @@ def conectar():
 def get_Drivers():
     drivers = pyodbc.drivers()
     return drivers
-#comprobar la conexion
-'''
-from dotenv import load_dotenv
-
-load_dotenv()
-
-conexion_BD=conectar()
-cursor=conexion_BD.cursor()
-
-cursor.execute("SELECT 1")
-
-for row in cursor.fetchall():
-    print(row)
-
-cursor.close()
-conexion_BD.close()
-'''
